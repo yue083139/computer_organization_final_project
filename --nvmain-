@@ -1,0 +1,9 @@
+gem5 Simulator System.  http://gem5.org
+gem5 is copyrighted software; use the --copyright option for details.
+
+gem5 compiled Jun 16 2025 06:26:32
+gem5 started Jun 16 2025 08:41:29
+gem5 executing on ubuntu, pid 59532
+command line: ./build/X86/gem5.opt configs/example/se.py tests/test-progs/hello/bin/x86/linux/hello --caches --l2cache
+
+Error: script doesn't take any positional arguments

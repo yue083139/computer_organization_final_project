@@ -52,7 +52,7 @@ from m5.params import *
 from m5.proxy import *
 from m5.util.fdthelper import *
 
-from XBar import L2XBar
+from XBar import L2XBar,L3XBar
 from InstTracer import InstTracer
 from CPUTracers import ExeTracer
 from MemObject import MemObject
@@ -137,6 +137,13 @@ class BaseCPU(MemObject):
     def takeOverFrom(self, old_cpu):
         self._ccObject.takeOverFrom(old_cpu._ccObject)
 
+    def addThreeLevelCacheHierarchy(self, ic, dc, l3c, iwc = None, dwc = None):
+        self.addPrivateSplitL1Caches(ic, dc, iwc, dwc)
+        self.toL3Bus = L3XBar()
+        self.connectCachedPorts(self.toL3Bus)
+        self.l3cache = l3c
+        self.toL2Bus.master = self.l3cache.cpu_side
+        self._cached_ports = ['l3cache.mem_side']
 
     system = Param.System(Parent.any, "system object")
     cpu_id = Param.Int(-1, "CPU identifier")

@@ -1,0 +1,39 @@
+./build/X86/gem5.opt configs/example/se.py \
+  -c ~/Desktop/benchmark/quicksort \
+  --cpu-type=TimingSimpleCPU \
+  --caches --l2cache --l3cache \
+    --l1i-size=32kB --l1d-size=32kB \
+    --l2-size=128kB --l3-size=1MB \
+    --l2-assoc=8    --l3-assoc=16384 \
+    --cacheline-size=64 \
+  --mem-type=NVMainMemory \
+  --nvmain-config=../NVmain/Config/PCM_ISSCC_2012_4GB.config \
+  2>&1 | tee quicksort_fullway.log 
+
+./build/X86/gem5.opt configs/example/se.py \
+    -c ~/Desktop/benchmark/quicksort \
+    --cpu-type=TimingSimpleCPU \
+    --caches --l2cache --l3cache \
+    --l1i-size=32kB --l1d-size=32kB \
+    --l2-size=128kB --l3-size=1MB \
+    --l1i-assoc=2  --l1d-assoc=2 \
+    --l2-assoc=8   --l3-assoc=2  \
+    --replacement-policy=LFU\
+   --mem-type=NVMainMemory \
+   --nvmain-config=../NVmain/Config/PCM_ISSCC_2012_4GB.config \
+   2>&1 | tee quicksort_LFU.log
+
+
+./build/X86/gem5.opt \
+  configs/example/se.py \
+  -c ~/Desktop/benchmark/multiply \
+  --cpu-type=TimingSimpleCPU \
+  --caches --l2cache --l3cache \
+  --write-through \
+  --l1i-size=32kB --l1d-size=32kB \
+  --l2-size=128kB --l3-size=1MB \
+  --l1i-assoc=2  --l1d-assoc=2 \
+  --l2-assoc=8   --l3-assoc=4 \
+  --mem-type=NVMainMemory \
+  --nvmain-config=../NVmain/Config/PCM_ISSCC_2012_4GB.config \
+2>&1 | tee write_through.log

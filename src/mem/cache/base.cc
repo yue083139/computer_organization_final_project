@@ -83,6 +83,7 @@ BaseCache::BaseCache(const BaseCacheParams *p, unsigned blk_size)
       prefetcher(p->prefetcher),
       prefetchOnAccess(p->prefetch_on_access),
       writebackClean(p->writeback_clean),
+      writeThrough(p->write_through),
       tempBlockWriteback(nullptr),
       writebackTempBlockAtomicEvent([this]{ writebackTempBlockAtomic(); },
                                     name(), false,
@@ -228,6 +229,13 @@ BaseCache::handleTimingReqHit(PacketPtr pkt, CacheBlk *blk, Tick request_time)
         // just as lookupLatency or or the value of lat overriden
         // by access(), that calls accessBlock() function.
         cpuSidePort.schedTimingResp(pkt, request_time, true);
+
+        // write‐through: immediately forward a WriteReq down to memory
+        if (pkt->isWrite() && writeThrough) {
+
+            PacketPtr wc = writecleanBlk(blk, /*dest=*/0, pkt->id);
+            allocateWriteBuffer(wc, curTick());
+        }
     } else {
         DPRINTF(Cache, "%s satisfied %s, no response needed\n", __func__,
                 pkt->print());

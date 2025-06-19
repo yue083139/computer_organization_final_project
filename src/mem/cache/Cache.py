@@ -104,6 +104,8 @@ class BaseCache(MemObject):
     # cache.
     writeback_clean = Param.Bool(False, "Writeback clean lines")
 
+    write_through = Param.Bool(False, "On a write hit, also send a WriteReq down to memory")
+
     # Control whether this cache should be mostly inclusive or mostly
     # exclusive with respect to upstream caches. The behaviour on a
     # fill is determined accordingly. For a mostly inclusive cache,
@@ -115,7 +117,6 @@ class BaseCache(MemObject):
     # cache a line is dropped for a mostly exclusive cache.
     clusivity = Param.Clusivity('mostly_incl',
                                 "Clusivity with upstream cache")
-
 
 class Cache(BaseCache):
     type = 'Cache'

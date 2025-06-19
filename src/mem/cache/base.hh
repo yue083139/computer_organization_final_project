@@ -579,6 +579,10 @@ class BaseCache : public MemObject
      * clean evict), but rather need to send the actual data.
      */
     const bool writebackClean;
+    /**
+     * If true, on every write‐hit also send a WriteReq downstream.
+     */
+    const bool writeThrough;
 
     /**
      * Writebacks from the tempBlock, resulting on the response path

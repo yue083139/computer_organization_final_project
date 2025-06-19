@@ -98,18 +98,35 @@ def addNoISAOptions(parser):
                       help="use external port for SystemC TLM cosimulation")
     parser.add_option("--caches", action="store_true")
     parser.add_option("--l2cache", action="store_true")
+    parser.add_option("--l3cache", action="store_true", default=False)
     parser.add_option("--num-dirs", type="int", default=1)
     parser.add_option("--num-l2caches", type="int", default=1)
     parser.add_option("--num-l3caches", type="int", default=1)
-    parser.add_option("--l1d_size", type="string", default="64kB")
-    parser.add_option("--l1i_size", type="string", default="32kB")
-    parser.add_option("--l2_size", type="string", default="2MB")
-    parser.add_option("--l3_size", type="string", default="16MB")
-    parser.add_option("--l1d_assoc", type="int", default=2)
-    parser.add_option("--l1i_assoc", type="int", default=2)
-    parser.add_option("--l2_assoc", type="int", default=8)
-    parser.add_option("--l3_assoc", type="int", default=16)
-    parser.add_option("--cacheline_size", type="int", default=64)
+    parser.add_option("--l1d-size", type="string", default="64kB")
+    parser.add_option("--l1i-size", type="string", default="32kB")
+    parser.add_option("--l2-size", type="string", default="2MB")
+    parser.add_option("--l3-size", type="string", default="16MB")
+    parser.add_option("--l1d-assoc", type="int", default=2)
+    parser.add_option("--l1i-assoc", type="int", default=2)
+    parser.add_option("--l2-assoc", type="int", default=8)
+    parser.add_option("--l3-assoc", type="int", default=16)
+    parser.add_option("--cacheline-size", type="int", default=64)
+    parser.add_option("--l3-tag-latency",    type="int", default=20,
+                      help="Tag lookup latency (cycles) for L3")
+    parser.add_option("--l3-data-latency",   type="int", default=20,
+                      help="Data access latency (cycles) for L3")
+    parser.add_option("--l3-response-latency", type="int", default=20,
+                      help="Miss response latency (cycles) for L3")
+    parser.add_option("--l3-mshrs",           type="int", default=20,
+                      help="Number of MSHRs in the L3 cache")
+    parser.add_option("--l3-tgts-per-mshr",   type="int", default=12,
+                      help="Max number of targets per MSHR in L3")
+    parser.add_option("--l3-write-buffers",   type="int", default=16,
+                      help="Number of write buffers in the L3 cache")
+    parser.add_option("--replacement-policy", type="string", default="LRU",
+                      help="Replacement policy for L3 cache: LRU, LFU, etc.")
+    parser.add_option("--write-through", action="store_true", default=False,
+                      help="if set, on every write hit also send a WriteReq down")
 
     # Enable Ruby
     parser.add_option("--ruby", action="store_true")
@@ -130,6 +147,9 @@ def addNoISAOptions(parser):
 def addCommonOptions(parser):
     # start by adding the base options that do not assume an ISA
     addNoISAOptions(parser)
+    for arg in sys.argv:
+        if arg[:9] == "--nvmain-":
+            parser.add_option(arg, type="string", default="NULL", help="Set NVM value for a parameter")
 
     # system options
     parser.add_option("--list-cpu-types",
@@ -221,7 +241,7 @@ def addCommonOptions(parser):
     parser.add_option("--initialize-only", action="store_true", default=False,
                       help="""Exit after initialization. Do not simulate time.
                               Useful when gem5 is run as a library.""")
-
+    
     # Simpoint options
     parser.add_option("--simpoint-profile", action="store_true",
                       help="Enable basic block profiling for SimPoints")
